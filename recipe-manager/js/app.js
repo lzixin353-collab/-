@@ -322,11 +322,8 @@ const App = {
           </select>
         </div>
       </div>
-      <div class="roulette-area">
-        <div class="roulette-container" id="roulette-container">
-          <div class="roulette-wheel" id="roulette-wheel"></div>
-          <div class="roulette-pointer">▼</div>
-        </div>
+      <div class="picker-area">
+        <div class="picker-display" id="picker-display">点击下方按钮开始</div>
         <button class="btn btn-primary spin-btn" id="lottery-spin">🎯 开始抽签</button>
       </div>
       <div class="lottery-result" id="lottery-result"></div>
@@ -338,7 +335,7 @@ const App = {
   setupLottery() {
     const spinBtn = document.getElementById('lottery-spin');
     const resultEl = document.getElementById('lottery-result');
-    const wheelEl = document.getElementById('roulette-wheel');
+    const displayEl = document.getElementById('picker-display');
 
     spinBtn?.addEventListener('click', async () => {
       const ingredientsInput = document.getElementById('lottery-ingredients')?.value?.trim() || '';
@@ -365,33 +362,41 @@ const App = {
         return;
       }
 
-      // 轮盘动画
-      const items = candidates.slice(0, 8);
-      wheelEl.innerHTML = items.map((r, i) => 
-        `<div class="roulette-item" data-id="${r.id}">${r.name}</div>`
-      ).join('');
-
-      const duration = 3000;
-      const spins = 5 + Math.random() * 3;
-      const finalIndex = Math.floor(Math.random() * items.length);
-      const degPerItem = 360 / items.length;
-      const offset = degPerItem * finalIndex + degPerItem / 2;
-      const targetDeg = 360 * spins + offset;
-
-      wheelEl.style.transition = `transform ${duration}ms cubic-bezier(0.2, 0.8, 0.2, 1)`;
-      wheelEl.style.transform = `rotate(${targetDeg}deg)`;
+      // 点名器：随机选中结果，按候选数量自适应轮转次数
+      const winner = candidates[Math.floor(Math.random() * candidates.length)];
+      const cycleCount = Math.min(20 + candidates.length * 2, 50);
+      const cycleList = [];
+      for (let i = 0; i < cycleCount - 1; i++) {
+        cycleList.push(candidates[Math.floor(Math.random() * candidates.length)]);
+      }
+      cycleList.push(winner);
 
       spinBtn.disabled = true;
-      setTimeout(() => {
-        spinBtn.disabled = false;
-        const winner = items[finalIndex];
-        resultEl.innerHTML = `
-          <div class="result-card">
-            <h3>🎉 抽中：${winner.name}</h3>
-            <a href="#recipe-detail/${winner.id}" class="btn btn-primary">查看菜谱</a>
-          </div>
-        `;
-      }, duration);
+      resultEl.innerHTML = '';
+      displayEl.classList.remove('picker-final');
+
+      let idx = 0;
+      const runCycle = () => {
+        if (idx >= cycleList.length) {
+          displayEl.textContent = winner.name;
+          displayEl.classList.add('picker-final');
+          resultEl.innerHTML = `
+            <div class="result-card">
+              <h3>🎉 抽中：${winner.name}</h3>
+              <a href="#recipe-detail/${winner.id}" class="btn btn-primary">查看菜谱</a>
+            </div>
+          `;
+          spinBtn.disabled = false;
+          return;
+        }
+        displayEl.textContent = cycleList[idx].name;
+        displayEl.classList.remove('picker-final');
+        idx++;
+        const progress = idx / cycleList.length;
+        const delay = 60 + Math.pow(progress, 1.5) * 180;
+        setTimeout(runCycle, delay);
+      };
+      runCycle();
     });
   },
 
@@ -521,7 +526,7 @@ const App = {
 
     container.innerHTML = `
       <div class="detail-header">
-        <button class="btn btn-secondary back-btn" onclick="App.navigate('recipes')">← 返回</button>
+        <button class="btn btn-secondary back-btn" onclick="App.navigate('recipes')"><img src="assets/icons/return.png" alt="" class="back-icon"> 返回</button>
         <div class="detail-actions">
           <button class="btn ${isFav ? 'btn-fav active' : 'btn-fav'}" id="fav-btn">${isFav ? '❤️' : '🤍'} 收藏</button>
           <a href="#edit-recipe/${recipe.id}" class="btn btn-primary">✏️ 编辑</a>
