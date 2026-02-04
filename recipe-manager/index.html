@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>菜谱管理系统</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="#home" class="logo">🍳 菜谱管理</a>
+      <div class="search-bar">
+        <div class="search-box-wrapper">
+          <input type="text" id="global-search" placeholder="搜索菜谱、食材、标签..." class="search-input">
+          <img src="assets/icons/chack.png" alt="搜索" class="search-icon">
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#home" class="nav-link" data-page="home">首页</a>
+        <a href="#recipes" class="nav-link" data-page="recipes">菜谱</a>
+        <a href="#lottery" class="nav-link" data-page="lottery">抽签</a>
+        <a href="#profile" class="nav-link" data-page="profile">用户主页</a>
+        <a href="#edit-recipe" class="nav-link btn-add">➕ 添加菜谱</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- 首页 -->
+    <div id="home-page" class="page-content active">
+      <div id="home-content"></div>
+    </div>
+
+    <!-- 菜谱筛选页 -->
+    <div id="recipes-page" class="page-content">
+      <div class="recipes-page-inner">
+        <div id="recipes-filters" class="recipes-filters"></div>
+        <div id="recipes-content" class="recipes-grid"></div>
+      </div>
+    </div>
+
+    <!-- 抽签页 -->
+    <div id="lottery-page" class="page-content">
+      <div id="lottery-content"></div>
+    </div>
+
+    <!-- 用户主页 -->
+    <div id="profile-page" class="page-content">
+      <div id="profile-content"></div>
+    </div>
+
+    <!-- 菜谱详情页 -->
+    <div id="recipe-detail-page" class="page-content">
+      <div id="recipe-detail-content" class="detail-container"></div>
+    </div>
+
+    <!-- 添加/编辑菜谱页 -->
+    <div id="edit-recipe-page" class="page-content">
+      <div id="edit-recipe-content" class="edit-container"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>菜谱管理系统 · 本地存储 · 安全便捷</p>
+  </footer>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
